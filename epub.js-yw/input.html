@@ -12,20 +12,36 @@
 
 </head>
 <body>
-  <div id="title"><input type="file" id="input"></div>
+  <div id="navbar">
+    <div id="title"><input type="file" id="input"></div>
+    <a id="chapters" href="#chapters">...</a>
+  </div>
   <div id="viewer" class="spreads"></div>
+  <div class="sidebar-wrapper"><div id="chapterview"></div></div>
   <a id="prev" href="#prev" class="arrow">‹</a>
   <a id="next" href="#next" class="arrow">›</a>
 
   <script>
 
   var book = ePub();
+  book.loaded.navigation.then(onNavigationLoaded.bind(this)).catch(fatal.bind(this, "error loading toc"));
   var rendition;
 
   var inputElement = document.getElementById("input");
 
   var viewerElement = document.getElementById("viewer");
   viewerElement.setAttribute("hidden",true);
+
+  var chaptersElement = document.getElementById("chapters");
+  chaptersElement.addEventListener("click", function(e){
+    var chapterview = document.getElementById("chapterview");
+
+    if (chapterview.getAttribute("hidden")) {
+      chapterview.removeAttribute("hidden");
+    } else {
+      chapterview.setAttribute("hidden",true);
+    }
+  }, false);
 
   inputElement.addEventListener('change', function (e) {
         var file = e.target.files[0];
@@ -88,7 +104,30 @@
     document.addEventListener("keyup", keyListener, false);
   }
 
+function onNavigationLoaded(nav) {
+    console.log("navigation", nav);
+    var chapterview = document.getElementById("chapterview");
+    chapterview.setAttribute("hidden",true);
+    chapterview.innerHTML = "";
 
+    let handleItems = (items, indent) => {
+        items.forEach(item => {
+            let a = document.createElement("a");
+            chapterview.appendChild(a);
+
+            a.href = item.href;
+            a.dataset.href = item.href;
+            a.innerHTML = `${"&nbsp;".repeat(indent*4)}${item.label.trim()}`;
+            // a.addEventListener("click", this.onTocItemClick.bind(this, item.href));
+            handleItems(item.subitems, indent + 1);
+        });
+    };
+    handleItems(nav.toc, 0);
+};
+
+function fatal(msg, err, usersFault) {
+    console.error(msg, err);
+};
 
   </script>
 
