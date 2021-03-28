@@ -32,14 +32,18 @@
   var viewerElement = document.getElementById("viewer");
   viewerElement.setAttribute("hidden",true);
 
+  var sidebarWrapperElement = document.getElementsByClassName("sidebar-wrapper")[0];
+  sidebarWrapperElement.setAttribute("hidden",true);
+  sidebarWrapperElement.addEventListener("click", function(e){
+    sidebarWrapperElement.setAttribute("hidden",true);
+  }, false);
+
   var chaptersElement = document.getElementById("chapters");
   chaptersElement.addEventListener("click", function(e){
-    var chapterview = document.getElementById("chapterview");
-
-    if (chapterview.getAttribute("hidden")) {
-      chapterview.removeAttribute("hidden");
+    if (sidebarWrapperElement.getAttribute("hidden")) {
+      sidebarWrapperElement.removeAttribute("hidden");
     } else {
-      chapterview.setAttribute("hidden",true);
+      sidebarWrapperElement.setAttribute("hidden",true);
     }
   }, false);
 
@@ -107,7 +111,6 @@
 function onNavigationLoaded(nav) {
     console.log("navigation", nav);
     var chapterview = document.getElementById("chapterview");
-    chapterview.setAttribute("hidden",true);
     chapterview.innerHTML = "";
 
     let handleItems = (items, indent) => {
